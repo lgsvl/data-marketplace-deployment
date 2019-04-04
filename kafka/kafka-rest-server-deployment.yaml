@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: kafka-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest-proxy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: rest-proxy
+    spec:
+      containers:
+      - name: cp
+        image: confluentinc/cp-kafka-rest
+        env:
+        - name: KAFKAREST_LOG4J_OPTS
+          value: -Dlog4j.configuration=file:/etc/kafka-rest/log4j.properties
+        command:
+        - kafka-rest-start
+        - /etc/kafka-rest/kafka-rest.properties
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config
+          mountPath: /etc/kafka-rest
+      volumes:
+      - name: config
+        configMap:
+          name: tools-config

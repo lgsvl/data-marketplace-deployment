@@ -1,0 +1,12 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: es-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: aws-efs
+  resources:
+    requests:
+      storage: 10Gi

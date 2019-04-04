@@ -1,0 +1,28 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-ingress-service
+  namespace: kube-system
+  annotations:
+    # replace with the correct value of the generated certificate in the AWS console
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<arn cert>"
+    # the backend instances are HTTP
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    # Map port 443
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+spec:
+  type: LoadBalancer
+  selector:
+    k8s-app: traefik-ingress-lb
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
+    - protocol: TCP
+      port: 8080
+      name: admin
+    - name: https
+      port: 443
+      targetPort: http

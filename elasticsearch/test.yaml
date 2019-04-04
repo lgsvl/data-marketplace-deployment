@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bb
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bb
+  template:
+    metadata:
+      labels:
+        app: bb
+    spec:
+      containers:
+      - name: bb
+        image: busybox
+        command: ["sleep"]
+        args: ["100000000"]
+
+        volumeMounts:
+        - mountPath: /data
+          name: storage
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: es-pvc
